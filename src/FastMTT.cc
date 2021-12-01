@@ -23,6 +23,7 @@ Likelihood::Likelihood(){
   compnentsBitWord.reset();
   enableComponent(fastMTT::MASS);
   enableComponent(fastMTT::MET);
+  enableComponent(fastMTT::PTHH);
   ///experimental components. Disabled by default.
   disableComponent(fastMTT::PX);
   disableComponent(fastMTT::PY);  
@@ -94,6 +95,13 @@ void Likelihood::setMETInputs(const LorentzVector & aMET,
   covMET = aCovMET;
 
 }
+
+void Likelihood::setPTHHInputs(const double pthh){
+  ptHH = pthh; 
+
+}
+
+
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 void Likelihood::setParameters(const std::vector<double> & aPars){
@@ -241,6 +249,7 @@ double Likelihood::ptLikelihood(const double & pTTauTau, int type) const{
 
   return std::abs(value);
 }
+
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 double Likelihood::metTF(const LorentzVector & metP4,
@@ -273,6 +282,13 @@ double Likelihood::metTF(const LorentzVector & metP4,
   return const_MET*TMath::Exp(-0.5*pull2);
 }
 //////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+double Likelihood::pthh_likelihood(const double pthh ) const{
+  std::cout << pthh << "    testing the call" << std::endl;
+  return 1.0; 
+}
+
+//////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 double Likelihood::value(const double *x) const{
 
@@ -287,6 +303,7 @@ double Likelihood::value(const double *x) const{
   double value = -1.0;
   if(compnentsBitWord.test(fastMTT::MET)) value *= metTF(recoMET, testMET, covMET);
   if(compnentsBitWord.test(fastMTT::MASS)) value *= massLikelihood(testP4.M());    
+  if(compnentsBitWord.test(fastMTT::PTHH)) value *= pthh_likelihood(ptHH);
   if(compnentsBitWord.test(fastMTT::PX)) value *= ptLikelihood(testP4.Px(), 0);
   if(compnentsBitWord.test(fastMTT::PY)) value *= ptLikelihood(testP4.Py(), 1); 
   return value;
@@ -370,7 +387,7 @@ bool FastMTT::compareLeptons(const classic_svFit::MeasuredTauLepton& measuredTau
 ///////////////////////////////////////////////////////////////////
 void FastMTT::run(const std::vector<classic_svFit::MeasuredTauLepton>& measuredTauLeptons,
 		  const double & measuredMETx, const double & measuredMETy,
-		  const TMatrixD& covMET){
+		  const TMatrixD& covMET, const double & pthh){
 
   bestP4 = LorentzVector();  
   ////////////////////////////////////////////
@@ -398,6 +415,7 @@ void FastMTT::run(const std::vector<classic_svFit::MeasuredTauLepton>& measuredT
 			       aLepton1.type(), aLepton2.type(),
 			       aLepton1.decayMode(), aLepton2.decayMode());  
   myLikelihood.setMETInputs(aMET, covMET);
+  myLikelihood.setPTHHInputs(pthh);
 
   scan();
   //minimize();

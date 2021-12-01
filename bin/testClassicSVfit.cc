@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
   //Run FastMTT
   FastMTT aFastMTTAlgo;
-  aFastMTTAlgo.run(measuredTauLeptons, measuredMETx, measuredMETy, covMET);
+  aFastMTTAlgo.run(measuredTauLeptons, measuredMETx, measuredMETy, covMET, 12.5);
   LorentzVector ttP4 = aFastMTTAlgo.getBestP4();
   std::cout<<std::endl;
   std::cout << "FastMTT found best p4 with mass = " << ttP4.M()

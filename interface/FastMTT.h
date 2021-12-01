@@ -27,7 +27,7 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 namespace fastMTT {
   double likelihoodFunc(double *x, double *par);
 
-  enum likelihoodComponent{MET, MASS, PX, PY, ENERGY, IP};
+  enum likelihoodComponent{MET, MASS, PX, PY, ENERGY, IP, PTHH};
 }
 
 class Likelihood{
@@ -47,6 +47,8 @@ public:
 
   void setMETInputs(const LorentzVector & aMET,
                     const TMatrixD& aCovMET);
+   
+  void setPTHHInputs(const double pthh);
 
   void setParameters(const std::vector<double> & parameters);
 
@@ -61,6 +63,8 @@ public:
   double metTF(const LorentzVector & metP4,
                const LorentzVector & nuP4,
                const TMatrixD& covMET) const;
+  
+  double pthh_likelihood(const double ptHH) const;
 
 private:
 
@@ -68,6 +72,8 @@ private:
   LorentzVector recoMET;
   
   TMatrixD covMET;
+
+  double ptHH;
  
   double mVis, mVisLeg1, mVisLeg2;
   
@@ -101,7 +107,7 @@ class FastMTT {
 
   ///Run fastMTT algorithm for given input
   void run(const std::vector<classic_svFit::MeasuredTauLepton>&,
-	   const double &, const double &, const TMatrixD&);
+	   const double &, const double &, const TMatrixD&, const double &);
 
   ///Set likelihood shape parameters. Two parameters are expected:
   ///power of 1/mVis, and scaling factor of mTest
